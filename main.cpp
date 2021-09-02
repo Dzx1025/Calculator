@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
 
     //  Generating questions
     srand((unsigned) time(nullptr));
-    printf("Num of questions:%d\n", numOfQuestions);
+//    printf("Num of questions:%d\n", numOfQuestions);
 //    printf("numOfOperator\tnumOfNumber\tPairOfParentheses\n");
 
     for (auto &question: questions) {
@@ -60,17 +60,43 @@ int main(int argc, char *argv[]) {
                 pairOfParentheses = (rand() % MAX_PAIR_PARENTHESES);
 //        printf("%u\t%u\t%u\n", numOfOperators, numOfNumber, pairOfParentheses);
 
-        tempQes += to_string((rand() % MAX_NUM_VALUE));
+        unsigned int numOfCreatedLeftParentheses = 0, numOfCreatedRightParentheses = 0;
         for (int i = 0; i < numOfOperators; i++) {
-            bool WhetherToGenerateParentheses = (bool) (rand() & 1);
-
-            string ope = operators.at((rand() % operators.size()));
-            tempQes += ope;
+            bool whetherAddLeftParentheses = (rand() & 1);
+            if (whetherAddLeftParentheses
+                && numOfCreatedLeftParentheses < MAX_PAIR_PARENTHESES) {
+                tempQes += "(";
+                numOfCreatedLeftParentheses++;
+            }
+            //  Add number
             int num = (rand() % MAX_NUM_VALUE);
             tempQes += to_string(num);
+            bool whetherAddRightParentheses = (rand() & 1);
+            if (whetherAddRightParentheses && numOfCreatedRightParentheses < numOfCreatedLeftParentheses
+                && numOfCreatedRightParentheses < MAX_PAIR_PARENTHESES) {
+                tempQes += ")";
+                numOfCreatedRightParentheses++;
+            }
+            //  Add Operator
+            tempQes += " ";
+            string ope = operators.at((rand() % operators.size()));
+            tempQes += ope;
+            tempQes += " ";
+        }
+        bool whetherAddLeftParentheses = (rand() & 1);
+        if (whetherAddLeftParentheses
+            && numOfCreatedLeftParentheses < MAX_PAIR_PARENTHESES) {
+            tempQes += "(";
+            numOfCreatedLeftParentheses++;
+        }
+        int num = (rand() % MAX_NUM_VALUE);
+        tempQes += to_string(num);
+        for (int i = numOfCreatedLeftParentheses - numOfCreatedRightParentheses; i > 0; i--) {
+            tempQes += ")";
+            numOfCreatedLeftParentheses++;
         }
 //        tempAns = compute(tempQes);
-        cout << tempQes << '\t' << tempAns << endl;
+        cout << tempQes << " = " << tempAns << endl;
         //  restore
         question = move(tempQes);
         ans.emplace_back(move(tempAns));
